@@ -1,12 +1,14 @@
 import React, {Component} from 'react';
-import Node from './Node/Node'
+import NodeGrid from './NodeGrid/NodeGrid'
 
 export default class TravelingSalesmanVisualizer extends Component {
 
     render() {
         return(
-            <div>foo<Node></Node></div>
+            <div>foo
+                <NodeGrid></NodeGrid>
             
+            </div>
         );
     }
 }
