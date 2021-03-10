@@ -3,44 +3,60 @@ import NodeGrid from '../NodeGrid/NodeGrid';
 import './Node.css'
 
 interface State {
-    bgColor:string
-    selected:boolean
+
 }
 
 interface Props {
+    nodeId:number,
     xPos:number,
     yPos:number,
-    grid:NodeGrid
+    grid:NodeGrid,
+    selected:boolean,
+    bgColor:string,
+    //selectNode: ((node:Node, clicked:Boolean) => void)
 }
 
 export default class Node extends Component<Props, State> {
+
     constructor(props:any) {
         super(props);
         this.state = {
-            bgColor: "",
-            selected: false
+
         }
+        
     }
 
-
-    handleClick = () => {
-        /* when node clicked select/unselect it and add/delete node from 
-        grid nodes */
-        if(this.state.selected == true) {
-            this.setState({selected: false});
-            this.setState({bgColor: ""});
-            this.props.grid.deleteNode(this);
-            return;
-        }
-        this.setState({selected: true});
-        this.setState({bgColor: "blue"});
-        this.props.grid.addNode(this);
+    handleClick() {
+        /* when node selection required to change */
         
+        const newList = this.props.grid.state.nodes.map((row) => {
+            
+            const newRow = row.map((item:Node) => {
+                if(item.props.xPos == this.props.xPos && item.props.yPos == this.props.yPos) {
+                    let state = false;
+                    let color = "";
+                    
+                    //if node has been clicked
+                    if(item.props.selected === false) state = true;
+                    if(item.props.selected === false) color = "red";
+                    if(item.props.selected === true) this.props.grid.deleteSelectedNode(item); else this.props.grid.addSelectedNode(item)
+
+                    return <Node nodeId={item.props.nodeId} xPos={item.props.xPos} yPos={item.props.yPos} grid={this.props.grid} selected={state} bgColor={color}/>
+                } 
+                return item;
+            });
+            return newRow;
+            
+        });
+
+        this.props.grid.setState({nodes: newList});
+        
+
     }
 
     render() {
         return(
-            <div className="node" style={{backgroundColor: this.state.bgColor}} onClick={this.handleClick}></div>
+            <div className="node" style={{backgroundColor: this.props.bgColor}} onClick={() => this.handleClick()}></div>
         );
     }
 }

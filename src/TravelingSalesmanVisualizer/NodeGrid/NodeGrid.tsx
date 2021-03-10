@@ -1,6 +1,8 @@
+import { start } from 'node:repl';
 import React, { Component } from 'react';
 import Node from '../Node/Node'
 import './NodeGrid.css';
+import { bruteForce } from  '../Algorithms/BruteForce'
 
 const GRID_WIDTH = 40;
 const GRID_HEIGHT = 20;
@@ -19,15 +21,17 @@ export default class NodeGrid extends Component<Props, State> {
     constructor(props: any) {
         super(props);
         this.state = { nodes: [], selectedNodes: []};
+        //this.selectNode = this.selectNode.bind(this);
     }
 
     componentDidMount() {
         const nodes = [];
-        
-        for(let i = 0; i < GRID_HEIGHT; i++) {
-            const row = [];
-            for(let ind = 0; ind < GRID_WIDTH; ind++) {
-                row.push([]);
+        let keyInd = 0;
+        for(let colInd = 0; colInd < GRID_HEIGHT; colInd++) {
+            const row:any = [];
+            for(let rowInd = 0; rowInd < GRID_WIDTH; rowInd++) {
+                row.push(<Node key={keyInd} nodeId={keyInd} xPos={colInd} yPos={rowInd} grid={this} selected={false} bgColor={""}/>);
+                keyInd++;
             }
             nodes.push(row);    
         }
@@ -36,29 +40,89 @@ export default class NodeGrid extends Component<Props, State> {
 
     }
 
-    deleteNode(node:Node) {
+    deleteSelectedNode(node:Node) {
         //delete node from the selected nodes
         var helper = this.state.selectedNodes;
-        var index = helper.indexOf(node);
+        var index = -1;
+
+        helper.find((item, ind) => {
+            if(item.props.nodeId === node.props.nodeId) return index = ind;
+        });
+        console.log(index)
         if(index !== -1) {
             helper.splice(index, 1);
             this.setState({selectedNodes: helper});
         }
     }
 
-    addNode(node:Node) {
+    addSelectedNode(node:Node) {
         //add node to selected nodes
         this.state.selectedNodes.push(node);
-        console.log(this.state.selectedNodes);
+    }
+
+    nextNode(startNode:Node, goalNode:Node): Node | null {
+        //returns null if new node not found or goal and start are the same
+        if(startNode.props.nodeId === goalNode.props.nodeId) return null; //check if goal and start the same
+
+        let nextNodeX = startNode.props.xPos;
+        let nextNodeY = startNode.props.yPos;
+        if(startNode.props.xPos > goalNode.props.xPos) {
+            nextNodeX -= 1;
+        } else if (startNode.props.xPos < goalNode.props.xPos) {
+            nextNodeX += 1;
+        } 
+
+        if(startNode.props.yPos > goalNode.props.yPos) {
+            nextNodeY -= 1;
+        } else if(startNode.props.yPos < goalNode.props.yPos) {
+            nextNodeY += 1;
+        }
+
+        let found:Node | undefined;
+        this.state.nodes.forEach((arr) => {
+            for(let i = 0; i < arr.length-1; i++) {
+                if(arr[i].props.yPos === nextNodeY && arr[i].props.xPos === nextNodeX) {
+                    found = arr[i];
+                }
+            }
+        });
+        
+        //returns next node if found, otherwise null
+        return found !== undefined ? found : null;
+    }
+
+    visualizeNode(node:Node | null, color:string) {
+        if(node !== null) {
+            const newList = this.state.nodes.map((row) => {
+                
+                const newRow = row.map((item:Node) => {
+                    if(item.props.nodeId == node.props.nodeId && node.props.bgColor !== "red" ) {
+                        //if we need to do visualizations without clicking(selecting)
+                        color = color;
+                        if(item.props.bgColor === "purple") {
+                            color = "black"
+                        };
+                        return <Node key={item.props.nodeId} nodeId={item.props.nodeId} xPos={item.props.xPos} yPos={item.props.yPos} grid={this} selected={false} bgColor={color}/>
+                    } 
+                    return item;
+                });
+                return newRow;
+                
+            });
+            this.setState({nodes: newList});
+        }
+
     }
 
     render() {
         const {nodes} = this.state;
         return(
+            
             <div className='nodegrid'>
+                <div> <button onClick={() => bruteForce(this)}></button> </div>
                 {nodes.map((row:any, rowInd:number) => {
                     return <div>
-                        {row.map((node:any, colInd:number) => <Node xPos={rowInd} yPos={colInd} grid={this}></Node>)}
+                        {row.map((node:Node, colInd:number) => node)}
                     </div>
                 }
 
