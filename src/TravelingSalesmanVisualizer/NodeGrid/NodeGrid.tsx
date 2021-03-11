@@ -66,26 +66,51 @@ export default class NodeGrid extends Component<Props, State> {
 
         let nextNodeX = startNode.props.xPos;
         let nextNodeY = startNode.props.yPos;
+
         if(startNode.props.xPos > goalNode.props.xPos) {
             nextNodeX -= 1;
+  
         } else if (startNode.props.xPos < goalNode.props.xPos) {
             nextNodeX += 1;
+           
         } 
 
         if(startNode.props.yPos > goalNode.props.yPos) {
             nextNodeY -= 1;
+           
         } else if(startNode.props.yPos < goalNode.props.yPos) {
             nextNodeY += 1;
+           
         }
 
         let found:Node | undefined;
-        this.state.nodes.forEach((arr) => {
+        for(let indx = 0; indx < this.state.nodes.length; indx++) {
+            let arr = this.state.nodes[indx];
+            for(let i = 0; i < arr.length; i++) {
+                if(arr[i].props.yPos === nextNodeY && arr[i].props.xPos === nextNodeX) {
+                    if(arr[i].props.selected === true && arr[i].props.nodeId !== goalNode.props.nodeId) {
+                        if(nextNodeX-startNode.props.xPos !== 0 && nextNodeY-startNode.props.yPos !== 0) {
+                            nextNodeX = startNode.props.xPos;
+                        } else {
+                            if(nextNodeX === startNode.props.xPos) nextNodeX++; else nextNodeY++;
+                        }
+                        i = 0;
+                        indx = 0;
+                    } else {    
+                        found = arr[i];
+                        i = arr.length;
+                        indx = this.state.nodes.length;
+                    }
+                }
+            }
+        }
+        /* this.state.nodes.forEach((arr) => {
             for(let i = 0; i < arr.length-1; i++) {
                 if(arr[i].props.yPos === nextNodeY && arr[i].props.xPos === nextNodeX) {
                     found = arr[i];
                 }
             }
-        });
+        }); */
         
         //returns next node if found, otherwise null
         return found !== undefined ? found : null;
@@ -113,6 +138,21 @@ export default class NodeGrid extends Component<Props, State> {
             this.setState({nodes: newList});
         }
 
+    }
+
+    clearPaths = () => {
+        const newList = this.state.nodes.map((row) => {
+                
+            const newRow = row.map((item:Node) => {
+                if(item.props.bgColor !==  "red") {
+                    return <Node key={item.props.nodeId} nodeId={item.props.nodeId} xPos={item.props.xPos} yPos={item.props.yPos} grid={this} selected={false} bgColor={""}/>
+                } 
+                return item;
+            });
+            return newRow;
+            
+        });
+        this.setState({nodes: newList});
     }
 
     render() {

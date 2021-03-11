@@ -19,8 +19,8 @@ export const bruteForce = (grid:NodeGrid) => {
     perms = nextPermutation(permutations, []);
     if(perms.length !== 0) {
         let res = nodeArrayFromPermutation(perms);
-        console.log(res + " <-- asdsa")
         traversePoints(res, grid);
+        grid.clearPaths();
     }
 
 }
