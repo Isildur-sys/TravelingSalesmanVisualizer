@@ -92,6 +92,7 @@ export default class NodeGrid extends Component<Props, State> {
     }
 
     visualizeNode(node:Node | null, color:string) {
+        //changes color of individual node. Used for visualizations
         if(node !== null) {
             const newList = this.state.nodes.map((row) => {
                 

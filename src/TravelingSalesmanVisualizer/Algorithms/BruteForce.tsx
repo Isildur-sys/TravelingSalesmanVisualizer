@@ -10,29 +10,19 @@ let solution:Node[] = []; //best solution found
 let solutionLength:number; //length of the best solution
 
 export const bruteForce = (grid:NodeGrid) => {
-    let nodes:Node[] = [];
     if(originalNodes.length === 0) {
         originalNodes = grid.state.selectedNodes;
-        nodes = originalNodes;
         createPermutationList(originalNodes.length-1);
         console.log(permutations);
-    } else {
-        let isEqual:boolean = false;
-        for(let i = 0; i < originalNodes.length - 1; i++) {
-            if(originalNodes[i].props.nodeId !== nodes[i].props.nodeId) {
-                isEqual = true;
-            }
-        }
-        
-    }
+    } 
     let perms:any = [];
-    for(let i = 0; i < 6; i++) {
-        perms = nextPermutation(permutations, []);
-        console.log(perms + " <--- " + i)
-     
+    perms = nextPermutation(permutations, []);
+    if(perms.length !== 0) {
+        let res = nodeArrayFromPermutation(perms);
+        console.log(res + " <-- asdsa")
+        traversePoints(res, grid);
     }
-    console.log(permutations)
-    traversePoints(nodes, grid);
+
 }
 
 const createPermutationList = (n:number):any => {
@@ -47,6 +37,22 @@ const createPermutationList = (n:number):any => {
             return [0];
         } else {
             res.push(createPermutationList(n-1))
+        }
+    }
+    return res;
+}
+
+const nodeArrayFromPermutation = (arr:Array<number>):Array<Node> => {
+    let helper = [...originalNodes];
+    let res = [originalNodes[0]];
+    helper.splice(0, 1);
+
+    for(let i = 0; i < originalNodes.length-1; i++) {
+        if(arr.length !== i) {
+            res.push(helper[arr[i]]);
+            helper.splice(arr[i], 1);
+        } else {
+            res.push(helper[0]);
         }
     }
     return res;
@@ -79,6 +85,7 @@ const factorial = (x:number):number => {
   }
 
 const traversePoints = (nodes:Node[], grid:NodeGrid) => {
+    //visualizes given path
     let ind = 1;
     let currNode:Node = nodes[0];
     let endNode:Node = nodes[1];
@@ -89,7 +96,7 @@ const traversePoints = (nodes:Node[], grid:NodeGrid) => {
         if(helperNode === null) {
             if(ind === nodes.length){
                 clearInterval(id); 
-                return;
+                return bruteForce(grid);
             }
             endNode = nodes[ind];
             ind++;
@@ -98,5 +105,5 @@ const traversePoints = (nodes:Node[], grid:NodeGrid) => {
             grid.visualizeNode(currNode, "purple");
         }
         
-    }, 100)
+    }, 50)
 }
