@@ -38,9 +38,13 @@ export default class Node extends Component<Props, State> {
                     
                     //if node has been clicked
                     if(item.props.selected === false) state = true;
-                    if(item.props.selected === false) color = "red";
+                    if(item.props.selected === false) {
+                        //if this is first node to be clicked set color green, red otherwise
+                        if(this.props.grid.state.selectedNodes.length === 0) color = "orange"; else color = "red"
+                        
+                    }
                     if(item.props.selected === true) this.props.grid.deleteSelectedNode(item); else this.props.grid.addSelectedNode(item)
-
+                    
                     return <Node nodeId={item.props.nodeId} xPos={item.props.xPos} yPos={item.props.yPos} grid={this.props.grid} selected={state} bgColor={color}/>
                 } 
                 return item;

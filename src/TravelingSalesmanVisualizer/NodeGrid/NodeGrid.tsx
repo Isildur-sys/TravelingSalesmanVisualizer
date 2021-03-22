@@ -122,12 +122,14 @@ export default class NodeGrid extends Component<Props, State> {
             const newList = this.state.nodes.map((row) => {
                 
                 const newRow = row.map((item:Node) => {
-                    if(item.props.nodeId == node.props.nodeId && node.props.bgColor !== "red" ) {
+                    if(item.props.nodeId == node.props.nodeId) {
                         //if we need to do visualizations without clicking(selecting)
                         color = color;
                         if(item.props.bgColor === "purple") {
                             color = "black"
-                        };
+                        } else if (item.props.bgColor === "red") {
+                            color = "green"
+                        }
                         return <Node key={item.props.nodeId} nodeId={item.props.nodeId} xPos={item.props.xPos} yPos={item.props.yPos} grid={this} selected={false} bgColor={color}/>
                     } 
                     return item;
@@ -141,10 +143,14 @@ export default class NodeGrid extends Component<Props, State> {
     }
 
     clearPaths = () => {
+        //clear the drawn path, but not nodes
         const newList = this.state.nodes.map((row) => {
                 
             const newRow = row.map((item:Node) => {
-                if(item.props.bgColor !==  "red") {
+                if(item.props.bgColor === "green") {
+                    return <Node key={item.props.nodeId} nodeId={item.props.nodeId} xPos={item.props.xPos} yPos={item.props.yPos} grid={this} selected={true} bgColor={"red"}/>
+                }
+                if(item.props.bgColor !==  "red" && item.props.bgColor !== "orange") {
                     return <Node key={item.props.nodeId} nodeId={item.props.nodeId} xPos={item.props.xPos} yPos={item.props.yPos} grid={this} selected={false} bgColor={""}/>
                 } 
                 return item;
