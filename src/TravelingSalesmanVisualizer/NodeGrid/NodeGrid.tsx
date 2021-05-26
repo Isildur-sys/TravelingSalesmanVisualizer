@@ -85,10 +85,13 @@ export default class NodeGrid extends Component<Props, State> {
 
         let found:Node | undefined;
         for(let indx = 0; indx < this.state.nodes.length; indx++) {
-            let arr = this.state.nodes[indx];
+            //loops through all node rows in the matrix
+            let arr = this.state.nodes[indx]; //<-- row of nodes
             for(let i = 0; i < arr.length; i++) {
+                //loops through the row
                 if(arr[i].props.yPos === nextNodeY && arr[i].props.xPos === nextNodeX) {
                     if(arr[i].props.selected === true && arr[i].props.nodeId !== goalNode.props.nodeId) {
+                        //avoid selected node which isn't the goal
                         if(nextNodeX-startNode.props.xPos !== 0 && nextNodeY-startNode.props.yPos !== 0) {
                             nextNodeX = startNode.props.xPos;
                         } else {
@@ -130,7 +133,7 @@ export default class NodeGrid extends Component<Props, State> {
                         } else if (item.props.bgColor === "red") {
                             color = "green"
                         }
-                        return <Node key={item.props.nodeId} nodeId={item.props.nodeId} xPos={item.props.xPos} yPos={item.props.yPos} grid={this} selected={false} bgColor={color}/>
+                        return <Node key={item.props.nodeId} nodeId={item.props.nodeId} xPos={item.props.xPos} yPos={item.props.yPos} grid={this} selected={node.props.selected} bgColor={color}/>
                     } 
                     return item;
                 });

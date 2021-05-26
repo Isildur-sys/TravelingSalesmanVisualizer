@@ -105,5 +105,5 @@ const traversePoints = (nodes:Node[], grid:NodeGrid) => {
             grid.visualizeNode(currNode, "purple");
         }
         
-    }, 50)
+    }, 100)
 }
